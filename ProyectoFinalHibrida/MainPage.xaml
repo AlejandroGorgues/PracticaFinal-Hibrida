@@ -17,7 +17,7 @@
         <TextBlock HorizontalAlignment="Left" Margin="63,81,0,0" Text="Lugar final" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox x:Name="lugarFinalTextBox" HorizontalAlignment="Left" Margin="172,75,0,0" Text="TextBox" VerticalAlignment="Top" Width="185"/>
         <Button Content="Buscar ruta" HorizontalAlignment="Left" Margin="216,129,0,0" VerticalAlignment="Top" Click="Button_Click"/>
-        <TextBox x:Name="rutaTextBox" HorizontalAlignment="Left" Margin="63,197,0,0" Text="TextBox" VerticalAlignment="Top" Height="494" Width="423"/>
+        <TextBox x:Name="rutaTextBox" AcceptsReturn="True" HorizontalAlignment="Left" Margin="63,197,0,0" Text="TextBox" VerticalAlignment="Top" Height="494" Width="423"/>
 
     </Grid>
 </Page>
