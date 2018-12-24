@@ -12,6 +12,8 @@ using Windows.Data.Json;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Services.Maps;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
@@ -21,7 +23,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// La plantilla de elemento Página en blanco está documentada en https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0xc0a
 
 namespace ProyectoFinalHibrida
 {
@@ -33,56 +34,91 @@ namespace ProyectoFinalHibrida
         Geolocator GPS = new Geolocator();
         MapIcon mapIconStart = new MapIcon();
         MapIcon mapIconEnd = new MapIcon();
-        MapIcon mapIconRuta = new MapIcon();
+        MapIcon mapIconRuta;
         String urlInicial = "http://dev.virtualearth.net/REST/V1/Routes/Driving?wp.0=";
         String urlMedio = "&wp.1=";
-        String urlFinal = "&avoid=minimizeTolls&output=json&key=UbyVV4Ma5EM8zXJ44OZi%7EE0q2RVZqdjQ2CX1z9HHMZw%7EAlQ1dCMOGkoxR9h0Gctn4QncW1KHvfVz_lvwqEobK-U2fcAQBw9z5hi9gWV6i2NU";
-        JsonObject objetoPuntos;
+        String urlFinal = "&avoid=minimizeTolls&output=json&key=88yPY0kZcOGX7RaKeHM8~ogAnZjvVpFAWmF1mTZUDZQ~AnnZzfuaCDOzl0HmlTs8aFZ9zjIgW8JFlm69BS6UUPsppWQgusCRU1C0VRk0wVHR";
         JsonArray arrayRuta;
+        ArrayList puntos = new ArrayList();
+        ArrayList warningItems = new ArrayList();
+        int iteracionEscritura = 1;
+
 
 
         public MainPage()
         {
             this.InitializeComponent();
+            mapView.MapServiceToken = "88yPY0kZcOGX7RaKeHM8~ogAnZjvVpFAWmF1mTZUDZQ~AnnZzfuaCDOzl0HmlTs8aFZ9zjIgW8JFlm69BS6UUPsppWQgusCRU1C0VRk0wVHR";
 
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            double latEnd, longEnd, latStart, longStart;
-            //Geoposition pos = await GPS.GetGeopositionAsync();
+            
+            Geopoint lastPoint = new Geopoint(new BasicGeoposition()), currentPoint;
+
             Windows.UI.Core.DispatchedHandler actualizarTextBox = async () =>
             {
                 HttpClient client = new HttpClient();
                 HttpResponseMessage stream = await client.GetAsync(urlInicial+lugarIncialTextBox.Text+urlMedio+lugarFinalTextBox.Text+urlFinal);
+                //Si ha obtenido una ruta como respuesta, escribe en el mapa
                 if (stream.IsSuccessStatusCode)
                 {
                     String str = await stream.Content.ReadAsStringAsync();
                     JsonValue jsonValue = JsonValue.Parse(str);
-                    objetoPuntos = jsonValue.GetObject().GetNamedArray("resourceSets").GetObjectAt(0).GetNamedArray("resources").GetObjectAt(0).GetNamedArray("routeLegs").GetObjectAt(0);
+                    arrayRuta = jsonValue.GetObject().GetNamedArray("resourceSets").GetObjectAt(0).GetNamedArray("resources").GetObjectAt(0).GetNamedArray("routeLegs").GetObjectAt(0).GetNamedArray("itineraryItems");
 
-                    arrayRuta = objetoPuntos.GetNamedArray("itineraryItems");
-                    
-                    //Bucle que dibuja cada punto de la ruta en el mapa
+                    //Bucle que dibuja cada punto de la ruta y la ruta entre el punto actual y el anterior en el mapa
+                    var first = arrayRuta.First();
                     foreach (var puntoRuta in arrayRuta)
                     {
                         PuntoBing puntoBing = obtenerPunto(puntoRuta.GetObject());
-                        mapIconRuta.Location = geopositionPoint(puntoBing.Latitude, puntoBing.Longitude);
+
+                        currentPoint = geopositionPoint(puntoBing.Latitude, puntoBing.Longitude);
+                        mapIconRuta = new MapIcon
+                        {
+                            Location = currentPoint,
+                            Title = "Pike Place Market"
+                        };
                         mapView.MapElements.Add(mapIconRuta);
-                        rutaTextBox.Text = rutaTextBox.Text + "\r\n" + puntoBing.ToString();
-       
+
+                        puntos.Add(puntoBing);
+                        escribePunto(puntoBing);
+
+                        //Si el punto actual es el último, pasa a ser el actual en el código
+                        
+                        if (!puntoRuta.Equals(first))
+                        {
+
+                            // Obtiene la ruta entre el punto anterior y el actual.
+                            MapRouteFinderResult routeResult =
+                                    await MapRouteFinder.GetDrivingRouteAsync(
+                                    startPoint: lastPoint,
+                                    endPoint: currentPoint,
+                                    optimization: MapRouteOptimization.Time,
+                                    restrictions: MapRouteRestrictions.None);
+
+                            if (routeResult.Status == MapRouteFinderStatus.Success)
+                            {
+
+                                // Usa la ruta para inicializar MapRouteView.
+                                MapRouteView viewOfRoute = new MapRouteView(routeResult.Route);
+                                viewOfRoute.RouteColor = Colors.Yellow;
+                                viewOfRoute.OutlineColor = Colors.Black;
+
+                                // Añade el nuevo MapRouteView al conjunto de rutas
+                                // de MapControl.
+                                mapView.Routes.Add(viewOfRoute);
+
+                                //El punto actual se convierte en el anterior
+                                lastPoint = currentPoint;
+                            }
+                        }
+                        else
+                        {
+                            lastPoint = currentPoint;
+                        }
                     }
-
-                    //Obtención de la latitud y longitud inicial y final para ser dibujados en el mapa
-                    latEnd = objetoPuntos.GetNamedObject("actualEnd").GetNamedArray("coordinates").GetNumberAt(0);
-                    longEnd = objetoPuntos.GetNamedObject("actualEnd").GetNamedArray("coordinates").GetNumberAt(1);
-                    latStart = objetoPuntos.GetNamedObject("actualStart").GetNamedArray("coordinates").GetNumberAt(0);
-                    longStart = objetoPuntos.GetNamedObject("actualStart").GetNamedArray("coordinates").GetNumberAt(1);
-
-                    mapIconStart.Location = geopositionPoint(latStart, longStart);
-                    mapIconEnd.Location = geopositionPoint(latEnd, longEnd);
-                    mapView.MapElements.Add(mapIconStart);
-                    mapView.MapElements.Add(mapIconEnd);
                 }
                 else
                 {
@@ -149,6 +185,57 @@ namespace ProyectoFinalHibrida
             }
 
             return new PuntoBing(coordenadas.GetNumberAt(0), coordenadas.GetNumberAt(1), instruccion.GetNamedString("text"), instruccion.GetNamedString("maneuverType"), detalles.GetNamedString("roadType"), puntoJson.GetNamedNumber("travelDistance"), puntoJson.GetNamedNumber("travelDuration"), warnings, signs); 
+        }
+
+        private void escribePunto(PuntoBing punto)
+        {
+
+            rutaTextBox.Text =  rutaTextBox.Text + Environment.NewLine + "Acción " + iteracionEscritura + " : " + Environment.NewLine + " A " + punto.Distancia + "Km " + punto.Accion;
+            iteracionEscritura += 1;
+        }
+
+        private void mapView_MapElementClick(MapControl sender, MapElementClickEventArgs args)
+        {
+
+            BasicGeoposition locationIcon = args.Location.Position;
+            ArrayList listNumberWarning = new ArrayList();
+            var warningI = 1;
+
+            foreach (PuntoBing puntoBing in puntos)
+            {
+                if(puntoBing.Latitude == Math.Round(locationIcon.Latitude, 5) && puntoBing.Longitude == Math.Round(locationIcon.Longitude, 5))
+                {
+                    latitudTB.Text = puntoBing.Latitude.ToString();
+                    longitudTB.Text = puntoBing.Longitude.ToString();
+                    tipoAccionTB.Text = puntoBing.TipoRoad;
+                    distanciaTB.Text = puntoBing.Distancia.ToString();
+                    tiempoTB.Text = puntoBing.Tiempo.ToString();
+                    foreach(var signal in puntoBing.Signs)
+                    {
+                        signalsTB.Text = signalsTB.Text + Environment.NewLine + signal.ToString();
+                    }
+
+                    foreach(var warning in puntoBing.Warnings)
+                    {
+                        warningItems.Add(warning as Warning);
+                        listNumberWarning.Add("Advertencia: "+warningI);
+                        warningI++;
+                    }
+                    warningsCB.ItemsSource = listNumberWarning;
+                }
+            }
+
+        }
+
+        private void warningsCB_DropDownClosed(object sender, object e)
+        {
+            var comboB = sender as ComboBox;
+            var index = comboB.SelectedIndex;
+            Warning wSelected = warningItems[index] as Warning;
+            warningsTB.Text = "Grado: " + wSelected.Grado;
+            warningsTB.Text = warningsTB.Text + Environment.NewLine + "Descripción: " + wSelected.Descripcion;
+            warningsTB.Text = warningsTB.Text + Environment.NewLine + "Inicio: " + wSelected.CoordinateStart;
+            warningsTB.Text = warningsTB.Text + Environment.NewLine + "Final: " + wSelected.CoordinateEnd;
         }
     }
 }
