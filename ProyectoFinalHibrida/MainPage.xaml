@@ -11,28 +11,26 @@
 
     <Grid>
 
-        <Custom:MapControl x:Name="mapView" HorizontalAlignment="Left" Margin="546,0,0,0" VerticalAlignment="Top" Height="990" Width="944" MapElementClick="mapView_MapElementClick"/>
+        <Custom:MapControl x:Name="mapView" HorizontalAlignment="Left" Margin="582,0,0,0" VerticalAlignment="Top" Height="990" Width="908" MapElementClick="mapView_MapElementClick"/>
         <TextBlock HorizontalAlignment="Left" Margin="63,33,0,0" Text="Lugar inicio" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox x:Name="lugarIncialTextBox" HorizontalAlignment="Left" Margin="172,27,0,0" Text="" VerticalAlignment="Top" Width="185"/>
         <TextBlock HorizontalAlignment="Left" Margin="63,81,0,0" Text="Lugar final" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox x:Name="lugarFinalTextBox" HorizontalAlignment="Left" Margin="172,75,0,0" Text="" VerticalAlignment="Top" Width="185"/>
         <Button Content="Buscar ruta" HorizontalAlignment="Left" Margin="216,129,0,0" VerticalAlignment="Top" Click="Button_Click"/>
-        <TextBox x:Name="rutaTextBox" AcceptsReturn="True" HorizontalAlignment="Left" Margin="20,197,0,0" Text="" VerticalAlignment="Top" Height="437" Width="511"/>
-        <TextBlock HorizontalAlignment="Left" Margin="244,655,0,0" Text="Punto" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="6,695,0,0" Text="Latitud:" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="6,759,0,0" Text="Longitud:" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="6,824,0,0" Text="Tipo acción:" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="208,695,0,0" Text="Distancia recorrido:" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="208,759,0,0" Text="Tiempo de recorrido:" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <ComboBox x:Name="warningsCB" HorizontalAlignment="Left" Margin="198,818,0,0" VerticalAlignment="Top" Header="Advertencias" DropDownClosed="warningsCB_DropDownClosed"/>
-        <TextBox x:Name="latitudTB" HorizontalAlignment="Left" Margin="104,689,0,0" Text="" VerticalAlignment="Top"/>
-        <TextBox x:Name="longitudTB" HorizontalAlignment="Left" Margin="104,753,0,0" Text="" VerticalAlignment="Top" RenderTransformOrigin="-0.086,0.344"/>
-        <TextBox x:Name="tipoAccionTB" HorizontalAlignment="Left" Margin="104,818,0,0" Text="" VerticalAlignment="Top"/>
-        <TextBox x:Name="distanciaTB" HorizontalAlignment="Left" Margin="365,695,0,0" Text="" VerticalAlignment="Top"/>
-        <TextBox x:Name="tiempoTB" HorizontalAlignment="Left" Margin="365,753,0,0" Text="" VerticalAlignment="Top"/>
-        <TextBox x:Name="warningsTB"  AcceptsReturn="True" HorizontalAlignment="Left" Margin="337,802,0,0" Text="" VerticalAlignment="Top" Height="188" Width="204"/>
-        <TextBlock HorizontalAlignment="Left" Margin="6,918,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Señales"/><LineBreak/><Run Text="Importantes"/><LineBreak/><Run/></TextBlock>
-        <TextBox x:Name="signalsTB" AcceptsReturn="True" HorizontalAlignment="Left" Margin="104,880,0,0" Text="" VerticalAlignment="Top" Height="110" Width="87"/>
+        <TextBox x:Name="rutaTextBox" AcceptsReturn="True" HorizontalAlignment="Left" Margin="10,178,0,0" Text="" VerticalAlignment="Top" Height="504" Width="567"/>
+        <TextBlock HorizontalAlignment="Left" Margin="243,715,0,0" Text="Punto" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,759,0,0" Text="Latitud:" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,825,0,0" Text="Longitud:" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="172,759,0,0" Text="Distancia recorrido:" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="172,811,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Tiempo "/><LineBreak/><Run Text="de recorrido:"/></TextBlock>
+        <ComboBox x:Name="warningsCB" HorizontalAlignment="Left" Margin="10,872,0,0" VerticalAlignment="Top" Header="Advertencias" DropDownClosed="warningsCB_DropDownClosed"/>
+        <TextBox x:Name="latitudTB" HorizontalAlignment="Left" Margin="87,753,0,0" Text="" VerticalAlignment="Top" Width="71"/>
+        <TextBox x:Name="longitudTB" HorizontalAlignment="Left" Margin="87,819,0,0" Text="" VerticalAlignment="Top" RenderTransformOrigin="-0.086,0.344" Width="71"/>
+        <TextBox x:Name="distanciaTB" HorizontalAlignment="Left" Margin="323,753,0,0" Text="" VerticalAlignment="Top" Width="84"/>
+        <TextBox x:Name="tiempoTB" HorizontalAlignment="Left" Margin="323,816,0,0" Text="" VerticalAlignment="Top" Width="84"/>
+        <TextBox x:Name="warningsTB"  AcceptsReturn="True" HorizontalAlignment="Left" Margin="172,888,0,0" Text="" VerticalAlignment="Top" Height="97" Width="405"/>
+        <TextBlock HorizontalAlignment="Left" Margin="429,786,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Señales:"/>
+        <TextBox x:Name="signalsTB" AcceptsReturn="True" HorizontalAlignment="Left" Margin="495,754,0,0" Text="" VerticalAlignment="Top" Height="94" Width="77"/>
 
     </Grid>
 </Page>

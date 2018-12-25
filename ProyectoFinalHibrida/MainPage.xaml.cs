@@ -75,10 +75,15 @@ namespace ProyectoFinalHibrida
                         PuntoBing puntoBing = obtenerPunto(puntoRuta.GetObject());
 
                         currentPoint = geopositionPoint(puntoBing.Latitude, puntoBing.Longitude);
+                        string nombres = "";
+                        foreach(string nombre in puntoBing.Nombre)
+                        {
+                            nombres = nombres + Environment.NewLine + nombre;
+                        }
                         mapIconRuta = new MapIcon
                         {
                             Location = currentPoint,
-                            Title = "Pike Place Market"
+                            Title = nombres
                         };
                         mapView.MapElements.Add(mapIconRuta);
 
@@ -159,6 +164,7 @@ namespace ProyectoFinalHibrida
         //Devuelve el contenido de un punto de tipo ruta como un objeto de tipo PuntoBing 
         private PuntoBing obtenerPunto(JsonObject puntoJson)
         {
+            ArrayList names = new ArrayList();
             ArrayList warnings = new ArrayList();
             ArrayList signs = new ArrayList();
 
@@ -166,6 +172,11 @@ namespace ProyectoFinalHibrida
             JsonArray coordenadas = datosManiobrabilidad.GetNamedArray("coordinates");
             JsonObject instruccion = puntoJson.GetNamedObject("instruction");
             JsonObject detalles = puntoJson.GetNamedArray("details").GetObjectAt(0);
+
+            foreach (var namesAux in detalles.GetNamedArray("names"))
+            {
+                names.Add(namesAux.GetString());
+            }
 
             if (puntoJson.ContainsKey("warnings"))
             {
@@ -184,7 +195,7 @@ namespace ProyectoFinalHibrida
                 }
             }
 
-            return new PuntoBing(coordenadas.GetNumberAt(0), coordenadas.GetNumberAt(1), instruccion.GetNamedString("text"), instruccion.GetNamedString("maneuverType"), detalles.GetNamedString("roadType"), puntoJson.GetNamedNumber("travelDistance"), puntoJson.GetNamedNumber("travelDuration"), warnings, signs); 
+            return new PuntoBing(coordenadas.GetNumberAt(0), coordenadas.GetNumberAt(1), instruccion.GetNamedString("text"), instruccion.GetNamedString("maneuverType"), detalles.GetNamedString("roadType"), puntoJson.GetNamedNumber("travelDistance"), puntoJson.GetNamedNumber("travelDuration"), names, warnings, signs); 
         }
 
         private void escribePunto(PuntoBing punto)
@@ -200,6 +211,7 @@ namespace ProyectoFinalHibrida
             BasicGeoposition locationIcon = args.Location.Position;
             ArrayList listNumberWarning = new ArrayList();
             var warningI = 1;
+            warningsTB.Text = "";
 
             foreach (PuntoBing puntoBing in puntos)
             {
@@ -207,21 +219,22 @@ namespace ProyectoFinalHibrida
                 {
                     latitudTB.Text = puntoBing.Latitude.ToString();
                     longitudTB.Text = puntoBing.Longitude.ToString();
-                    tipoAccionTB.Text = puntoBing.TipoRoad;
                     distanciaTB.Text = puntoBing.Distancia.ToString();
                     tiempoTB.Text = puntoBing.Tiempo.ToString();
                     foreach(var signal in puntoBing.Signs)
                     {
                         signalsTB.Text = signalsTB.Text + Environment.NewLine + signal.ToString();
                     }
-
-                    foreach(var warning in puntoBing.Warnings)
+                   
+                    foreach (var warning in puntoBing.Warnings)
                     {
                         warningItems.Add(warning as Warning);
-                        listNumberWarning.Add("Advertencia: "+warningI);
+                        listNumberWarning.Add("Advertencia: " + warningI);
                         warningI++;
                     }
                     warningsCB.ItemsSource = listNumberWarning;
+                    
+                    
                 }
             }
 
@@ -231,11 +244,16 @@ namespace ProyectoFinalHibrida
         {
             var comboB = sender as ComboBox;
             var index = comboB.SelectedIndex;
-            Warning wSelected = warningItems[index] as Warning;
-            warningsTB.Text = "Grado: " + wSelected.Grado;
-            warningsTB.Text = warningsTB.Text + Environment.NewLine + "Descripción: " + wSelected.Descripcion;
-            warningsTB.Text = warningsTB.Text + Environment.NewLine + "Inicio: " + wSelected.CoordinateStart;
-            warningsTB.Text = warningsTB.Text + Environment.NewLine + "Final: " + wSelected.CoordinateEnd;
+            if(index > -1)
+            {
+                Console.WriteLine("aqui");
+                Warning wSelected = warningItems[index] as Warning;
+                warningsTB.Text = "Grado: " + wSelected.Grado;
+                warningsTB.Text = warningsTB.Text + Environment.NewLine + "Descripción: " + wSelected.Descripcion;
+                warningsTB.Text = warningsTB.Text + Environment.NewLine + "Inicio: " + wSelected.CoordinateStart;
+                warningsTB.Text = warningsTB.Text + Environment.NewLine + "Final: " + wSelected.CoordinateEnd;
+            }
+            
         }
     }
 }

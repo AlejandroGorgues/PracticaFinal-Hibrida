@@ -16,10 +16,11 @@ namespace ProyectoFinalHibrida
         private string tipoRoad;
         private double distancia;
         private double tiempo;
+        private ArrayList nombre;
         private ArrayList warnings;
         private ArrayList signs;
 
-        public PuntoBing(double latitude, double longitude, string accion, string tipo, string tipoRoad, double distancia, double tiempo, ArrayList warnings, ArrayList signs)
+        public PuntoBing(double latitude, double longitude, string accion, string tipo, string tipoRoad, double distancia, double tiempo, ArrayList nombre, ArrayList warnings, ArrayList signs)
         {
             this.latitude = latitude;
             this.longitude = longitude;
@@ -28,6 +29,7 @@ namespace ProyectoFinalHibrida
             this.tipoRoad = tipoRoad;
             this.distancia = distancia;
             this.tiempo = tiempo;
+            this.nombre = nombre;
             this.warnings = warnings;
             this.signs = signs;
         }
@@ -39,11 +41,8 @@ namespace ProyectoFinalHibrida
         public string TipoRoad { get => tipoRoad; set => tipoRoad = value; }
         public double Distancia { get => distancia; set => distancia = value; }
         public double Tiempo { get => tiempo; set => tiempo = value; }
+        public ArrayList Nombre { get => nombre; set => nombre = value; }
         public ArrayList Warnings { get => warnings; set => warnings = value; }
         public ArrayList Signs { get => signs; set => signs = value; }
-        public override string ToString()
-        {
-            return Latitude + " " + Longitude;
-        }
     }
 }
